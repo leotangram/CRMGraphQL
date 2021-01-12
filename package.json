@@ -4,8 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "node .",
-    "dev": "nodemon ."
+    "start": "node ./src",
+    "dev": "nodemon ./src"
   },
   "author": "leotangram",
   "license": "ISC",
