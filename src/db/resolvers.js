@@ -3,7 +3,10 @@ const resolvers = {
     getCourse: () => 'Holi'
   },
   Mutation: {
-    newUser: () => 'Creating new User'
+    newUser: (_, { input }) => {
+      console.log(input)
+      return 'Creating...'
+    }
   }
 }
 
