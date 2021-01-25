@@ -1,5 +1,7 @@
 const resolvers = {
-  Query: {}
+  Query: {
+    getCourse: () => 'Holi'
+  }
 }
 
 module.exports = resolvers
