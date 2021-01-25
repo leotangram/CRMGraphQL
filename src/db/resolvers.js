@@ -1,6 +1,9 @@
 const resolvers = {
   Query: {
     getCourse: () => 'Holi'
+  },
+  Mutation: {
+    newUser: () => 'Creating new User'
   }
 }
 
