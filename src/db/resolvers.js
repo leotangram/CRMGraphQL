@@ -1,3 +1,4 @@
+const bcryptjs = require('bcryptjs')
 const User = require('../models/User')
 
 const resolvers = {
@@ -9,6 +10,9 @@ const resolvers = {
       const { email, password } = input
       const userExists = await User.findOne({ email })
       if (userExists) throw new Error('El usuario ya está registrado')
+
+      const salt = bcryptjs.genSaltSync(10)
+      input.password = bcryptjs.hashSync(password, salt)
 
       try {
         const user = new User(input)
