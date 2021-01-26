@@ -21,6 +21,11 @@ const resolvers = {
       } catch (error) {
         console.log(error)
       }
+    },
+    authenticateUser: async (_, { input }) => {
+      const { emai, password } = input
+      const userExits = await User.findOne({ email })
+      if (!userExists) throw new Error('El usuario no existe')
     }
   }
 }
