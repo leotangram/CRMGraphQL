@@ -1,14 +1,10 @@
 import { IUser } from '../interfaces/IUser'
+import { IProduct } from '../interfaces/IProduct'
 require('dotenv').config({ path: '.env' })
 const bcryptjs = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 const User = require('../models/User')
 const Product = require('../models/Product')
-
-type Tinput = {
-  email: string
-  password: string
-}
 
 const createToken = (user: IUser, secretWord: string, expiresIn: string) => {
   const { id, email, name, surname } = user
@@ -24,7 +20,7 @@ const resolvers = {
     }
   },
   Mutation: {
-    newUser: async (_: any, { input }: { input: Tinput }) => {
+    newUser: async (_: any, { input }: { input: IUser }) => {
       const { email, password } = input
       const userExists = await User.findOne({ email })
       if (userExists) throw new Error('El usuario ya está registrado')
@@ -40,7 +36,7 @@ const resolvers = {
         console.log(error)
       }
     },
-    authenticateUser: async (_: any, { input }: { input: Tinput }) => {
+    authenticateUser: async (_: any, { input }: { input: IUser }) => {
       const { email, password } = input
       const userExists = await User.findOne({ email })
       if (!userExists) throw new Error('El usuario no existe')
@@ -53,6 +49,15 @@ const resolvers = {
 
       return {
         token: createToken(userExists, <string>process.env.SECRET_WORD, '24h')
+      }
+    },
+    newProduct: async (_: any, { input }: { input: IProduct }) => {
+      try {
+        const product = new Product(input)
+        const result = await product.save()
+        return result
+      } catch (error) {
+        console.log(error)
       }
     }
   }
