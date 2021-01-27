@@ -16,6 +16,10 @@ const ProductSchema = mongoose.Schema({
     type: Number,
     required: true,
     trim: true
+  },
+  created: {
+    type: Date,
+    default: Date.now()
   }
 })
 
