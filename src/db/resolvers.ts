@@ -3,6 +3,7 @@ require('dotenv').config({ path: '.env' })
 const bcryptjs = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 const User = require('../models/User')
+const Product = require('../models/Product')
 
 type Tinput = {
   email: string
