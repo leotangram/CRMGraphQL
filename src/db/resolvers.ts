@@ -1,23 +1,29 @@
+import { IUser } from '../interfaces/IUser'
 require('dotenv').config({ path: '.env' })
 const bcryptjs = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 const User = require('../models/User')
 
-const createToken = (user, secretWord, expiresIn) => {
+type Tinput = {
+  email: string
+  password: string
+}
+
+const createToken = (user: IUser, secretWord: string, expiresIn: string) => {
   const { id, email, name, surname } = user
   return jwt.sign({ id, email, name, surname }, secretWord, { expiresIn })
 }
 
 const resolvers = {
   Query: {
-    getUser: async (_, { token }) => {
+    getUser: async (_: any, { token }: { token: string }): Promise<string> => {
       const secretWord = process.env.SECRET_WORD
       const userId = await jwt.verify(token, secretWord)
       return userId
     }
   },
   Mutation: {
-    newUser: async (_, { input }) => {
+    newUser: async (_: any, { input }: { input: Tinput }) => {
       const { email, password } = input
       const userExists = await User.findOne({ email })
       if (userExists) throw new Error('El usuario ya está registrado')
@@ -33,7 +39,7 @@ const resolvers = {
         console.log(error)
       }
     },
-    authenticateUser: async (_, { input }) => {
+    authenticateUser: async (_: any, { input }: { input: Tinput }) => {
       const { email, password } = input
       const userExists = await User.findOne({ email })
       if (!userExists) throw new Error('El usuario no existe')
@@ -45,7 +51,7 @@ const resolvers = {
       if (!correctPassword) throw new Error('El password es incorrecto')
 
       return {
-        token: createToken(userExists, process.env.SECRET_WORD, '24h')
+        token: createToken(userExists, <string>process.env.SECRET_WORD, '24h')
       }
     }
   }
