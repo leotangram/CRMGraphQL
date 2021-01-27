@@ -17,6 +17,14 @@ const resolvers = {
       const secretWord = process.env.SECRET_WORD
       const userId = await jwt.verify(token, secretWord)
       return userId
+    },
+    getProducts: async () => {
+      try {
+        const products = await Product.find({})
+        return products
+      } catch (error) {
+        console.log(error)
+      }
     }
   },
   Mutation: {
