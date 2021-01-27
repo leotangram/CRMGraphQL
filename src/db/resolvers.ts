@@ -83,6 +83,12 @@ const resolvers = {
         new: true
       })
       return product
+    },
+    deleteProduct: async (_: any, { id }: { id: string }) => {
+      const product = await Product.findById(id)
+      if (!product) throw new Error('Producto no encontrado')
+      await Product.findOneAndDelete({ _id: id })
+      return 'Producto eliminado'
     }
   }
 }
