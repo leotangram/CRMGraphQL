@@ -145,6 +145,19 @@ const resolvers = {
       }
       client = await Client.findOneAndUpdate({ _id: id }, input, { new: true })
       return client
+    },
+    deleteClient: async (
+      _: any,
+      { id }: { id: string },
+      ctx: { user: IUser }
+    ) => {
+      const client: IClient = await Client.findById(id)
+      if (!client) throw new Error('Ese cliente no existe')
+      if (client.seller.toString() !== ctx.user.id) {
+        throw new Error('Ese cliente no lo puedes editar')
+      }
+      await Client.findOneAndDelete({ _id: id })
+      return 'Cliente eliminado'
     }
   }
 }
