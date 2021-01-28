@@ -132,6 +132,19 @@ const resolvers = {
       } catch (error) {
         console.log(error)
       }
+    },
+    updateClient: async (
+      _: any,
+      { id, input }: { id: string; input: IClient },
+      ctx: { user: IUser }
+    ) => {
+      let client: IClient = await Client.findById(id)
+      if (!client) throw new Error('Ese cliente no existe')
+      if (client.seller.toString() !== ctx.user.id) {
+        throw new Error('Ese cliente no lo puedes editar')
+      }
+      client = await Client.findOneAndUpdate({ _id: id }, input, { new: true })
+      return client
     }
   }
 }
