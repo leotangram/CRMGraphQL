@@ -1,10 +1,12 @@
 import { IUser } from '../interfaces/IUser'
 import { IProduct } from '../interfaces/IProduct'
+import { IClient } from '../interfaces/IClient'
 require('dotenv').config({ path: '.env' })
 const bcryptjs = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 const User = require('../models/User')
 const Product = require('../models/Product')
+const Client = require('../models/Client')
 
 const createToken = (user: IUser, secretWord: string, expiresIn: string) => {
   const { id, email, name, surname } = user
@@ -89,6 +91,19 @@ const resolvers = {
       if (!product) throw new Error('Producto no encontrado')
       await Product.findOneAndDelete({ _id: id })
       return 'Producto eliminado'
+    },
+    newClient: async (_: any, { input }: { input: IClient }) => {
+      const { email } = input
+      const client = await Client.findOne({ email })
+      if (client) throw new Error('Ese cliente ya está registrado')
+      const newClient = new Client(input)
+      newClient.seller = '60118f56ab1aa3a46fce4479'
+      try {
+        const result = await newClient.save()
+        return result
+      } catch (error) {
+        console.log(error)
+      }
     }
   }
 }
