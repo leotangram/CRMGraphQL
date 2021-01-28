@@ -32,6 +32,30 @@ const resolvers = {
       const product = await Product.findById(id)
       if (!product) throw new Error('Producto no encontrado')
       return product
+    },
+    getClients: async () => {
+      try {
+        const clients = await Client.find({})
+        return clients
+      } catch (error) {
+        console.log(error)
+      }
+    },
+    getClientsSeller: async (_: any, $: any, ctx: { user: IUser }) => {
+      try {
+        const clients = await Client.find({ seller: ctx.user.id?.toString() })
+        return clients
+      } catch (error) {
+        console.log(error)
+      }
+    },
+    getClient: async (_: any, { id }: { id: string }, ctx: { user: IUser }) => {
+      const client: IClient = await Client.findById(id)
+      if (!client) throw new Error('Cliente no encontrado')
+      if (client.seller.toString() !== ctx.user.id) {
+        throw new Error('No es tu cliente')
+      }
+      return client
     }
   },
   Mutation: {
