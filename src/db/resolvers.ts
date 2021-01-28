@@ -92,12 +92,16 @@ const resolvers = {
       await Product.findOneAndDelete({ _id: id })
       return 'Producto eliminado'
     },
-    newClient: async (_: any, { input }: { input: IClient }) => {
+    newClient: async (
+      _: any,
+      { input }: { input: IClient },
+      ctx: { user: IUser }
+    ) => {
       const { email } = input
       const client = await Client.findOne({ email })
       if (client) throw new Error('Ese cliente ya está registrado')
       const newClient = new Client(input)
-      newClient.seller = '60118f56ab1aa3a46fce4479'
+      newClient.seller = ctx.user.id
       try {
         const result = await newClient.save()
         return result
