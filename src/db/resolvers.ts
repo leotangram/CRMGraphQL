@@ -158,7 +158,8 @@ const resolvers = {
       }
       await Client.findOneAndDelete({ _id: id })
       return 'Cliente eliminado'
-    }
+    },
+    newOrder: async () => {}
   }
 }
 
