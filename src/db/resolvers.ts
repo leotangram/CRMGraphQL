@@ -59,6 +59,14 @@ const resolvers = {
         throw new Error('No es tu cliente')
       }
       return client
+    },
+    getOrders: async () => {
+      try {
+        const orders = await Order.find({})
+        return orders
+      } catch (error) {
+        console.log(error)
+      }
     }
   },
   Mutation: {
