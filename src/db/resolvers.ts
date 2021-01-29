@@ -9,6 +9,7 @@ const jwt = require('jsonwebtoken')
 const User = require('../models/User')
 const Product = require('../models/Product')
 const Client = require('../models/Client')
+const Order = require('../models/Order')
 
 const createToken = (user: IUser, secretWord: string, expiresIn: string) => {
   const { id, email, name, surname } = user
@@ -172,16 +173,22 @@ const resolvers = {
       if (clientExists.seller.toString() !== ctx.user.id) {
         throw new Error('No tienes las credenciales')
       }
-      // input.order.forEach(async (article: IOrderProduct) => {
       for await (const article of input.order) {
         const { id } = article
-        const product: IProduct = await Product.findById(id)
+        const product = await Product.findById(id)
         if (article.quantity > product.existence) {
           throw new Error(
             `El artículo: ${product.name} excede la cantidad disponible`
           )
+        } else {
+          product.existence = product.existence - article.quantity
+          await product.save()
         }
       }
+      const newOrder = new Order(input)
+      newOrder.seller = ctx.user.id
+      const result = await newOrder.save()
+      return result
     }
   }
 }

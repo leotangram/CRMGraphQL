@@ -37,6 +37,7 @@ const typeDefs = gql`
     order: [OrderGroup]
     total: Float
     client: ID
+    seller: ID
     created: String
     state: OrderState
   }
