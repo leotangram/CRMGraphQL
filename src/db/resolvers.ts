@@ -213,6 +213,43 @@ const resolvers = {
       newOrder.seller = ctx.user.id
       const result = await newOrder.save()
       return result
+    },
+    updateOrder: async (
+      _: any,
+      { id, input }: { id: string; input: IOrder },
+      ctx: { user: IUser }
+    ) => {
+      const { client } = input
+      const orderExists = await Order.findById(id)
+      if (!orderExists) {
+        throw new Error('El pedido no existe')
+      }
+      const clientExists: IClient = await Client.findById(client)
+      if (!clientExists) {
+        throw new Error('El Cliente no existe')
+      }
+      if (clientExists.seller.toString() !== ctx.user.id) {
+        throw new Error('No tienes las credenciales')
+      }
+      if (input.order) {
+        for await (const article of input.order) {
+          const { id } = article
+          const product = await Product.findById(id)
+          if (article.quantity > product.existence) {
+            throw new Error(
+              `El articulo: ${product.name} excede la cantidad disponible`
+            )
+          } else {
+            product.existence = product.existence - article.quantity
+
+            await product.save()
+          }
+        }
+      }
+      const result = await Order.findOneAndUpdate({ _id: id }, input, {
+        new: true
+      })
+      return result
     }
   }
 }
