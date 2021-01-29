@@ -2,6 +2,7 @@ import { IUser } from '../interfaces/IUser'
 import { IProduct } from '../interfaces/IProduct'
 import { IClient } from '../interfaces/IClient'
 import { IOrder } from 'interfaces/IOrder'
+import { IOrderProduct } from '../interfaces/IOrder'
 require('dotenv').config({ path: '.env' })
 const bcryptjs = require('bcryptjs')
 const jwt = require('jsonwebtoken')
@@ -170,6 +171,16 @@ const resolvers = {
       if (!clientExists) throw new Error('Ese cliente no existe')
       if (clientExists.seller.toString() !== ctx.user.id) {
         throw new Error('No tienes las credenciales')
+      }
+      // input.order.forEach(async (article: IOrderProduct) => {
+      for await (const article of input.order) {
+        const { id } = article
+        const product: IProduct = await Product.findById(id)
+        if (article.quantity > product.existence) {
+          throw new Error(
+            `El artículo: ${product.name} excede la cantidad disponible`
+          )
+        }
       }
     }
   }
