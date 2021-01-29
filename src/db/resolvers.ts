@@ -1,6 +1,7 @@
 import { IUser } from '../interfaces/IUser'
 import { IProduct } from '../interfaces/IProduct'
 import { IClient } from '../interfaces/IClient'
+import { IOrder } from 'interfaces/IOrder'
 require('dotenv').config({ path: '.env' })
 const bcryptjs = require('bcryptjs')
 const jwt = require('jsonwebtoken')
@@ -159,7 +160,18 @@ const resolvers = {
       await Client.findOneAndDelete({ _id: id })
       return 'Cliente eliminado'
     },
-    newOrder: async () => {}
+    newOrder: async (
+      _: any,
+      { input }: { input: IOrder },
+      ctx: { user: IUser }
+    ) => {
+      const { client } = input
+      const clientExists = await Client.findById(client)
+      if (!clientExists) throw new Error('Ese cliente no existe')
+      if (clientExists.seller.toString() !== ctx.user.id) {
+        throw new Error('No tienes las credenciales')
+      }
+    }
   }
 }
 
