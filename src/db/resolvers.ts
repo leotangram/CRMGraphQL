@@ -75,6 +75,14 @@ const resolvers = {
       } catch (error) {
         console.log(error)
       }
+    },
+    getOrder: async (_: any, { id }: { id: string }, ctx: { user: IUser }) => {
+      const order: IOrder = await Order.findById(id)
+      if (!order) throw new Error('Pedido no encontrado')
+      if (order.seller?.toString() !== ctx.user.id) {
+        throw new Error('No tienes las credenciales')
+      }
+      return order
     }
   },
   Mutation: {
