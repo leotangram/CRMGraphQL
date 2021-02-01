@@ -2,7 +2,6 @@ import { IUser } from '../interfaces/IUser'
 import { IProduct } from '../interfaces/IProduct'
 import { IClient } from '../interfaces/IClient'
 import { IOrder } from 'interfaces/IOrder'
-import { IOrderProduct } from '../interfaces/IOrder'
 require('dotenv').config({ path: '.env' })
 const bcryptjs = require('bcryptjs')
 const jwt = require('jsonwebtoken')
@@ -110,12 +109,43 @@ const resolvers = {
           }
         },
         {
+          $limit: 10
+        },
+        {
           $sort: {
             total: -1
           }
         }
       ])
       return clients
+    },
+    bestSellers: async () => {
+      const sellers = await Order.aggregate([
+        { $match: { state: 'COMPLETED' } },
+        {
+          $group: {
+            _id: '$seller',
+            total: { $sum: '$total' }
+          }
+        },
+        {
+          $lookup: {
+            from: 'users',
+            localField: '_id',
+            foreignField: '_id',
+            as: 'seller'
+          }
+        },
+        {
+          $limit: 3
+        },
+        {
+          $sort: {
+            total: -1
+          }
+        }
+      ])
+      return sellers
     }
   },
   Mutation: {
