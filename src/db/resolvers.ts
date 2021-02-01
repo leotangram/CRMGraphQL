@@ -83,6 +83,14 @@ const resolvers = {
         throw new Error('No tienes las credenciales')
       }
       return order
+    },
+    getOrdersByState: async (
+      _: any,
+      { state }: { state: string },
+      ctx: { user: IUser }
+    ) => {
+      const orders = await Order.find({ seller: ctx.user.id, state })
+      return orders
     }
   },
   Mutation: {
