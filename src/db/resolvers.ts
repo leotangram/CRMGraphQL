@@ -250,6 +250,19 @@ const resolvers = {
         new: true
       })
       return result
+    },
+    deleteOrder: async (
+      _: any,
+      { id }: { id: string },
+      ctx: { user: IUser }
+    ) => {
+      const order: IOrder = await Order.findById(id)
+      if (!order) throw new Error('El pedido no existe')
+      if (order.seller?.toString() !== ctx.user.id) {
+        throw new Error('No tienes las credenciales')
+      }
+      await Order.findOneAndDelete({ _id: id })
+      return 'Pedido eliminado'
     }
   }
 }
