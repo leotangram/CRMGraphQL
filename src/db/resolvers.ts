@@ -43,7 +43,7 @@ const resolvers = {
     },
     getClientsSeller: async (_: any, $: any, ctx: { user: IUser }) => {
       try {
-        const clients = await Client.find({ seller: ctx.user.id?.toString() })
+        const clients = await Client.find({ seller: ctx.user?.id?.toString() })
         return clients
       } catch (error) {
         console.log(error)
@@ -67,7 +67,9 @@ const resolvers = {
     },
     getOrdersSeller: async (_: any, $: any, ctx: { user: IUser }) => {
       try {
-        const orders = await Order.find({ seller: ctx.user.id })
+        const orders = await Order.find({ seller: ctx.user.id }).populate(
+          'client'
+        )
         return orders
       } catch (error) {
         console.log(error)
